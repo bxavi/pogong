@@ -13,3 +13,10 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+#Angular and NPM
+# !ui/node_modules/.package-lock-json
+# !ui/
+
+#Folders
+#bin/
