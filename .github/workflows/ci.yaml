@@ -38,6 +38,9 @@ jobs:
 
     - name: Restore Database
       run: make restoredb
+      env:
+        POSTGRES_HOST: postgres
+        POSTGRES_PORT: 5432
 
     - name: Test
       run: make test
