@@ -12,11 +12,11 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+# vendor/S
 
 #Angular and NPM
 # !ui/node_modules/.package-lock-json
 # !ui/
 
 #Folders
-#bin/
+pg/data

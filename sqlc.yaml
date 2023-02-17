@@ -1,0 +1,78 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "sqlc/query.sql"
+    schema: "sqlc/schema.sql"
+
+    # https://github.com/gobuffalo/nulls
+    
+    gen:
+      go:
+        package: "db"
+        out: "db"
+        emit_json_tags: true
+        emit_result_struct_pointers: true
+        emit_empty_slices: true
+        emit_prepared_queries: false
+        emit_interface: true
+        json_tags_case_style: "none"
+        #emit_exact_table_names: true
+        overrides:
+          - column: "*.*id"
+            go_struct_tag: "json:\"-\""
+            nullable: true
+          - column: "*.*ID"
+            go_struct_tag: "json:\"-\""
+            nullable: true
+          - column: "player.password"
+            go_struct_tag: "json:\"-\""
+            nullable: true
+          - column: "player.token"
+            go_struct_tag: "json:\"-\""
+            nullable: true
+          - column: "player.token_datetime"
+            go_struct_tag: "json:\"-\""
+            nullable: true
+          - db_type: "pg_catalog.int4"
+            go_type: "github.com/gobuffalo/nulls.Int"
+            nullable: true
+          - db_type: "pg_catalog.int8"
+            go_type: "github.com/gobuffalo/nulls.Int"
+            nullable: true
+          - db_type: "string"
+            go_type: "github.com/gobuffalo/nulls.String"
+            nullable: true
+          - db_type: "pg_catalog.varchar"
+            go_type: "github.com/gobuffalo/nulls.String"
+            nullable: true
+          - db_type: "text"
+            go_type: "github.com/gobuffalo/nulls.String"
+            nullable: true
+          - db_type: "timestamptz"
+            go_type: "github.com/gobuffalo/nulls.Time"
+            nullable: true
+          - db_type: "pg_catalog.timestamp"
+            go_type: "github.com/gobuffalo/nulls.Time"
+            nullable: true
+          - db_type: "pg_catalog.timestamptz"
+            go_type: "github.com/gobuffalo/nulls.Time"
+            nullable: true
+          - db_type: "date"
+            go_type: "github.com/gobuffalo/nulls.Time"
+            nullable: true
+          - db_type: "pg_catalog.bool"
+            go_type: "github.com/gobuffalo/nulls.Bool"
+            nullable: true
+          - db_type: "uuid"
+            go_type: "github.com/gobuffalo/nulls.uuid"
+            nullable: trueXs
+          - db_type: "pgtype.UUID"
+            go_type: "github.com/gobuffalo/nulls.uuid"
+            nullable: true
+        
+      python:
+        package: "pyDAL"
+        out: "pyDAL"
+        emit_exact_table_names: true
+        emit_sync_querier: true
+        emit_async_querier: false
