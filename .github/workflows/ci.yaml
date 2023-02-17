@@ -37,11 +37,10 @@ jobs:
         go-version: 1.19
 
     - name: Restore Database
-      run: make restoredb
+      run: make restoredb CONTAINER_DB=postgres
       env:
         POSTGRES_HOST: postgres
         POSTGRES_PORT: 5432
-        CONTAINER_DB: postgres
 
     - name: Test
       run: make test
