@@ -27,7 +27,7 @@ jobs:
           --health-retries 5
           --name pogongdb
         volumes:
-          - ${{ github.workspace }}/pg:/docker-entrypoint-initdb.d
+          - ${{ github.workspace }}/pg:/pg/
 
 
     steps:
