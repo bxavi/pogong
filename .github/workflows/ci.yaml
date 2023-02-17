@@ -20,6 +20,8 @@ jobs:
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -36,11 +38,13 @@ jobs:
       with:
         go-version: 1.19
 
-    - name: Restore Database
-      run: make restoredb
+    - name: Restore PostgreSQL database
+      uses: docker://postgres:15.2-alpine
+      with:
+        entrypoint: /bin/bash
+        args: -c "cat ./pg/backup.sql | docker exec -i $(CONTAINER_DB) psql -U postgres -d pogong"
       env:
-        POSTGRES_HOST: localhost
-        POSTGRES_PORT: 5432
+        CONTAINER_DB: postgres
 
     - name: Test
       run: make test
