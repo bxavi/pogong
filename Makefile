@@ -43,7 +43,7 @@ backupdb:
 	docker exec $(CONTAINER_DB) pg_dump -F p --if-exists --clean --create --no-owner --username=root --host=localhost -p $(DB_INT_PORT) pogong > ./pg/backup.sql
 
 restoredb:
-	@docker exec $(CONTAINER_DB) psql --quiet -f "./pg/backup.sql" -d pogong
+	@docker exec $(CONTAINER_DB) psql --quiet -f "./pg/backup.sql" -d
 
 psql: init
 	docker exec -it $(CONTAINER_DB) psql -U root -d
