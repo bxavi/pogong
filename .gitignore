@@ -15,8 +15,9 @@
 # vendor/S
 
 #Angular and NPM
-# !ui/node_modules/.package-lock-json
-# !ui/
 
 #Folders
 pg/data
+
+#github.com
+!.github/
