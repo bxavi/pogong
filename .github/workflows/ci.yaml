@@ -37,6 +37,11 @@ jobs:
       with:
         go-version: 1.19
 
+    - name: Install PostgreSQL client
+      run: |
+          apt-get update
+          apt-get install --yes postgresql-client
+
     - name: Restore Database
       run: make restoredb
 
