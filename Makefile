@@ -46,7 +46,7 @@ restoredb:
 	@docker exec $(CONTAINER_DB) psql --quiet -f "./pg/backup.sql" -d pogong
 
 psql: init
-	docker exec -it $(CONTAINER_DB) psql -U root -d pogong
+	docker exec -it $(CONTAINER_DB) psql -U root -d
 
 generate: schemadb schemapy sqlc tygo
 
