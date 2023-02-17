@@ -43,10 +43,10 @@ backupdb:
 	docker exec $(CONTAINER_DB) pg_dump -F p --if-exists --clean --create --no-owner --username=root --host=localhost -p $(DB_INT_PORT) pogong > ./pg/backup.sql
 
 restoredb:
-	@docker exec $(CONTAINER_DB) psql --quiet -f "./pg/backup.sql" -d
+	@docker exec $(CONTAINER_DB) psql --quiet -f "./pg/backup.sql"
 
 psql: init
-	docker exec -it $(CONTAINER_DB) psql -U root -d
+	docker exec -it $(CONTAINER_DB) psql -U root -d pogong
 
 generate: schemadb schemapy sqlc tygo
 
@@ -65,4 +65,4 @@ tygo:
 test:
 	go test -v -cover ./...
 
-.PHONY: sqlc tygo npm pull initdb install go init generate backupdb killdb restoredb schemapy psql test sqlc
+.PHONY: sqlc tygo npm pull initdb install go init generate backupdb killdb restoredb schemapy psql test
