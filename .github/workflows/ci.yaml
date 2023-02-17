@@ -18,8 +18,8 @@ jobs:
       postgres:
         image: postgres:15.2-alpine
         env:
-          POSTGRES_PASSWORD: password
           POSTGRES_USER: root
+          POSTGRES_PASSWORD: password
           POSTGRES_DB: pogong
         options: >-
           --health-cmd pg_isready
