@@ -18,16 +18,14 @@ jobs:
       postgres:
         image: postgres:15.2-alpine
         env:
-          POSTGRES_USER: root
           POSTGRES_PASSWORD: password
-        ports:
-          - 5432:5432
+          POSTGRES_USER: root
+          POSTGRES_DB: pogong
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-          --name pogongdb
 
 
     steps:
@@ -38,13 +36,8 @@ jobs:
       with:
         go-version: 1.19
 
-    - name: Restore PostgreSQL database
-      uses: docker://postgres:15.2-alpine
-      with:
-        entrypoint: /bin/bash
-        args: -c "cat ./pg/backup.sql | docker exec -i $(CONTAINER_DB) psql -U postgres -d pogong"
-      env:
-        CONTAINER_DB: postgres
+    - name: Restore Database
+      run: make restoredb
 
     - name: Test
       run: make test
