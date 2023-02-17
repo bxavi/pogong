@@ -13,19 +13,19 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-
     services:
-      postgres:
+      pogongdb:
         image: postgres:15.2-alpine
         env:
           POSTGRES_PASSWORD: password
           POSTGRES_USER: root
-          POSTGRES_DB: pogong
+          POSTGRES_DB: testdb
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+          --name pogongdb
 
 
     steps:
@@ -37,9 +37,9 @@ jobs:
         go-version: 1.19
 
     - name: Restore Database
-      run: make restoredb CONTAINER_DB=postgres
+      run: make restoredb CONTAINER_DB=pogongdb
       env:
-        POSTGRES_HOST: postgres
+        POSTGRES_HOST: pogongdb
         POSTGRES_PORT: 5432
 
     - name: Test
