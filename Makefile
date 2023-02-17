@@ -63,6 +63,6 @@ tygo:
 	tygo generate
 
 test:
-	go test -v -cover ./... 
+go test -v -cover ./... 
 
 .PHONY: sqlc tygo npm pull initdb install go init generate backupdb killdb restoredb schemapy psql test
