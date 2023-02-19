@@ -38,6 +38,9 @@ jobs:
       with:
         go-version: 1.19
       
+    - name: Install Docker CLI
+      uses: docker/cli@v1
+      
     - run: DOCKER EXEC pogongdb ls
 
     - name: Restore DB
