@@ -38,8 +38,9 @@ jobs:
       with:
         go-version: 1.19
         
-    - name: Restore Database
+    - name: List PG
       run: docker exec -i pogongdb ls /pg/
+    - name: Restore DB
       run: make restoredb CONTAINER_DB=pogongdb
       env:
         POSTGRES_HOST: pogongdb
