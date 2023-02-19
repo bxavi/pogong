@@ -43,7 +43,7 @@ jobs:
       env:
           SKIP_LOGIN: true
       
-    - run: docker exec pogongdb ls
+    - run: docker exec pogongdb ls ./pg
 
     - name: Restore DB
       run: make restoredb
