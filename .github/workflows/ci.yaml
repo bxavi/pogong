@@ -39,7 +39,7 @@ jobs:
         go-version: 1.19
       
     - name: Install Docker CLI
-      uses: docker/cli@master
+      uses: docker/cli@v3
       
     - run: DOCKER EXEC pogongdb ls
 
