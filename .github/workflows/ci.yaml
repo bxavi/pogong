@@ -37,7 +37,8 @@ jobs:
       uses: actions/setup-go@v3
       with:
         go-version: 1.19
-        
+    
+    - run: echo "🎉 Workspace ${{ github.workspace }}."
     - name: List PG
     - run: docker exec pogongdb ls ${{github.workspace}}/pg
     - name: Restore DB
