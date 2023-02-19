@@ -40,6 +40,8 @@ jobs:
       
     - name: Install Docker CLI
       uses: docker/cli@master
+      env:
+          SKIP_LOGIN: true
       
     - run: DOCKER EXEC pogongdb ls
 
