@@ -38,9 +38,9 @@ jobs:
       with:
         go-version: 1.19
     - name: List Workspace Directoy 
-    - run: echo "Workspace ${{ github.workspace }}."
+      run: echo "Workspace ${{ github.workspace }}."
     - name: List PG
-    - run: docker exec pogongdb ls ${{github.workspace}}/pg
+      run: docker exec pogongdb ls ${{github.workspace}}/pg
     - name: Restore DB
       env:
         POSTGRES_HOST: pogongdb
