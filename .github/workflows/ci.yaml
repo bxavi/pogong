@@ -37,15 +37,9 @@ jobs:
       uses: actions/setup-go@v3
       with:
         go-version: 1.19
-
-    - name: dump
-      run: |
-        echo 'github.workspace === ${{ github.workspace }}'
-        echo "GITHUB_WORKSPACE === $GITHUB_WORKSPACE"
-        echo 'runner.workspace === ${{ runner.workspace }}'
-        echo "RUNNER_WORKSPACE === $RUNNER_WORKSPACE"
         
     - name: Restore Database
+      run: docker exec -i pogongdb ls /pg/
       run: make restoredb CONTAINER_DB=pogongdb
       env:
         POSTGRES_HOST: pogongdb
