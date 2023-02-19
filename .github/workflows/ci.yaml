@@ -39,7 +39,7 @@ jobs:
         go-version: 1.19
         
     - name: List PG
-      run: docker exec pogongdb ls
+      run: docker exec pogongdb ls /pg
     - name: Restore DB
       run: make restoredb CONTAINER_DB=pogongdb
       env:
