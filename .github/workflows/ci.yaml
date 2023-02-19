@@ -39,10 +39,9 @@ jobs:
         go-version: 1.19
       
     - run: DOCKER EXEC pogongdb ls
-    - name: Restore Database
-      run: make restoredb
-      
+
     - name: Restore DB
+      run: make restoredb
       env:
         POSTGRES_HOST: pogongdb
         POSTGRES_PORT: 5432
