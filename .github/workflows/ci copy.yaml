@@ -29,7 +29,7 @@ jobs:
           --health-retries 5
           --name postgres
         volumes:
-          - ${{ github.workspace }}/pg:/pg
+          - ${{ github.workspace }}:/ws
         ports:
           - 5432:5432
 
@@ -48,10 +48,14 @@ jobs:
           SKIP_LOGIN: true
       
     - run: ls ${{ github.workspace }}/pg
-    - run: docker exec ${{ env.CONTAINER_DB }} ls pg
+    - run: docker exec ${{ env.CONTAINER_DB }} ls ws/pg
 
     - name: Restore DB
-      run: make restoredb
+      run: docker exec ${{ env.CONTAINER_DB }} psql -d pogong --quiet -f ${{env.DB_INITIAL_PATH}}
+      env:
+        POSTGRES_HOST: ${{ env.CONTAINER_DB }}
+        POSTGRES_PORT: 5432
+        DB_INITIAL_PATH: ws/pg/backup.sql
         
     - name: Test
       run: make test

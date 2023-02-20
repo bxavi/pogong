@@ -1,7 +1,7 @@
 #TODO DEPENDENCIES make, angular cli, npm, docker, go > 1.17
 PROJECTNAME = pogong
 
-DB_INITIAL_PATH = ./pg/backup.sql
+DB_INITIAL_PATH = pg/backup.sql
 
 .DEFAULT_GOAL := all
 IMAGES = "postgres:15.2-alpine" "kjconroy/sqlc" 
