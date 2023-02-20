@@ -45,7 +45,7 @@ jobs:
       env:
           SKIP_LOGIN: true
       
-    - run: docker exec pogongdb ls $(DB_INITIAL_PATH)
+    - run: docker exec pogongdb ls ${{DB_INITIAL_PATH}}
       #working-directory: ${{github.workspace}}
 
     - name: Restore DB
