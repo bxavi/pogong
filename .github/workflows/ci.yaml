@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CONTAINER_DB: pogongdb
-      SQL_PATH: ${{ join(${{ github.workspace }}, '/pg')}}
+      SQL_PATH: ${{ join(github.workspace, '/pg')}}
     services:
       pogongdb:
         image: postgres:15.2-alpine
