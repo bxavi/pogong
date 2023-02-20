@@ -16,7 +16,7 @@ jobs:
     env:
       CONTAINER_DB: postgres
     services:
-      pogong:
+      pogongdb:
         image: postgres:15.2-alpine
         env:
           POSTGRES_PASSWORD: password
