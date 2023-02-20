@@ -14,7 +14,7 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     env:
-      DB_INITIAL_PATH: /pg/backup.sql
+      DB_INITIAL_PATH: pg/backup.sql
     services:
       pogongdb:
         image: postgres:15.2-alpine
@@ -49,7 +49,7 @@ jobs:
     - run: echo ${{github.workspace}}
     - run: ls ${{github.workspace}}
     - run: ls
-    - run: ls /pg
+    - run: ls pg
 
     - name: Restore DB
       run: make restoredb
