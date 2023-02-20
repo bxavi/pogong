@@ -31,7 +31,7 @@ npm:
 init: $(if $(RUNNING_DB),startdb, initdb)
 
 initdb:
-	docker run -v "$(CURDIR)/pg"/:/pg/ --name=$(CONTAINER_DB) -p 5432:$(DB_INT_PORT) -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -e PGDATA="./pg/data" -d postgres:15.2-alpine
+	docker run -v "$(CURDIR)/pg"/:/pg/ --name=$(CONTAINER_DB) -p 5432:$(DB_INT_PORT) -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -e PGDATA="./pg/data" -d pogong postgres:15.2-alpine
  
 startdb:
 	@if [ -z $$(docker ps -q -f name=$(CONTAINER_DB) -f status=running) ]; then \
