@@ -42,13 +42,13 @@ killdb:
 	docker kill $(CONTAINER_DB) && docker rm $(CONTAINER_DB)
 
 backupdb:
-	docker exec $(CONTAINER_DB) pg_dump -F p --if-exists --clean --create --no-owner --username=root --host=localhost -p $(DB_INT_PORT) pogong > ./pg/backup.sql
+	docker exec $(CONTAINER_DB) pg_dump -F p --if-exists --clean --create --no-owner --username=root --host=localhost -p $(DB_INT_PORT) $(PROJECTNAME) > ./pg/backup.sql
 
 restoredb:
 	@docker exec $(CONTAINER_DB) psql --quiet -f $(DB_INITIAL_PATH)
 
 psql: init
-	docker exec -it $(CONTAINER_DB) psql -U root -d pogong
+	docker exec -it $(CONTAINER_DB) psql -U root -d $(PROJECTNAME)
 
 generate: schemadb schemapy sqlc tygo
 
