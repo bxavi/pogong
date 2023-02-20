@@ -46,6 +46,7 @@ jobs:
       env:
           SKIP_LOGIN: true
       
+    - run: ls ${{ github.workspace }}/pg
     - run: docker exec ${{env.CONTAINER_DB}} ls pg
 
     - name: Restore DB
