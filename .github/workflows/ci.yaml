@@ -51,7 +51,7 @@ jobs:
     - run: docker exec ${{ env.CONTAINER_DB }} ls ws/pg
 
     - name: Restore DB
-      run: docker exec ${{ env.CONTAINER_DB }} psql -U --quiet -f ${{env.DB_INITIAL_PATH}}
+      run: docker exec ${{ env.CONTAINER_DB }} psql --quiet -f ${{env.DB_INITIAL_PATH}}
       env:
         POSTGRES_HOST: ${{ env.CONTAINER_DB }}
         POSTGRES_PORT: 5432
