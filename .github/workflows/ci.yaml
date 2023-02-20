@@ -44,7 +44,7 @@ jobs:
           SKIP_LOGIN: true
       
     - run: docker exec pogongdb ls /pg
-      working-directory: ${{github.workspace}}
+      #working-directory: ${{github.workspace}}
 
     - name: Restore DB
       run: make restoredb
