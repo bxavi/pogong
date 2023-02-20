@@ -30,7 +30,7 @@ jobs:
           --health-retries 5
           --name pogongdb
         volumes:
-          - ${{ env.POSTGRES_PASSWORD }}:/pg
+          - /home/runner/work/pogong/pogong/pg:/pg
         ports:
           - 5432:5432
 
