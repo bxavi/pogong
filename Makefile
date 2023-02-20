@@ -30,7 +30,7 @@ npm:
 init: $(if $(RUNNING_DB),startdb, initdb)
 
 initdb:
-	docker run -v "$(CURDIR)/pg"/:/pg/ --name=$(CONTAINER_DB) -p 5432:$(DB_INT_PORT) -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -e PGDATA="./pg/data" -d postgres:15.2-alpine
+	docker run -v "$(CURDIR)":/w/ --name=$(CONTAINER_DB) -p 5432:$(DB_INT_PORT) -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -e PGDATA="./pg/data" -d postgres:15.2-alpine
  
 startdb:
 	@if [ -z $$(docker ps -q -f name=$(CONTAINER_DB) -f status=running) ]; then \
@@ -44,7 +44,7 @@ backupdb:
 	docker exec $(CONTAINER_DB) pg_dump -F p --if-exists --clean --create --no-owner --username=root --host=localhost -p $(DB_INT_PORT) $(PROJECTNAME) > ./pg/backup.sql
 
 restoredb:
-	@docker exec $(CONTAINER_DB) psql -d root --quiet -f $(DB_INITIAL_PATH)
+	@docker exec $(CONTAINER_DB) psql -d root --quiet -f w/$(DB_INITIAL_PATH)
 
 psql: init
 	docker exec -it $(CONTAINER_DB) psql -U root -d $(PROJECTNAME)
