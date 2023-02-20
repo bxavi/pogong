@@ -14,7 +14,7 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     env:
-      DB_INITIAL_PATH: pg/backup.sql
+      DB_INITIAL_PATH: ws/pg/backup.sql
       CONTAINER_DB: pogongdb
     services:
       pogongdb:
@@ -47,7 +47,7 @@ jobs:
           SKIP_LOGIN: true
       
     - run: ls ${{ github.workspace }}/pg
-    - run: docker exec ${{ env.CONTAINER_DB }} ls ws
+    - run: docker exec ${{ env.CONTAINER_DB }} ls ws/pg
 
     - name: Restore DB
       run: make restoredb
