@@ -50,9 +50,9 @@ jobs:
     - run: ls ${{ github.workspace }}/pg
     - run: docker exec ${{ env.CONTAINER_DB }} ls pg
 
+    - run: docker exec pogongdb createdb root
     - name: Restore DB
-      run: docker exec pogongdb createdb root && \
-        make restoredb
+      run: make restoredb
         
     - name: Test
       run: make test
