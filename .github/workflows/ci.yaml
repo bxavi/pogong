@@ -48,7 +48,8 @@ jobs:
       env:
           SKIP_LOGIN: true
       
-    - run: ls ${{ github.workspace }}/pg
+    - run: echo ${{ env.SQL_PATH }}
+    - run: ls ${{ env.SQL_PATH }}
     - run: docker exec ${{ env.CONTAINER_DB }} ls pg
 
     - run: docker exec pogongdb createdb -U root root
