@@ -30,7 +30,7 @@ jobs:
           --health-retries 5
           --name pogongdb
         volumes:
-          - ${{ SQL_PATH }}:/pg
+          - ${{ env.SQL_PATH }}:/pg
         ports:
           - 5432:5432
 
