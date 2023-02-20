@@ -54,3 +54,6 @@ jobs:
         POSTGRES_HOST: ${{ env.CONTAINER_DB }}
         POSTGRES_PORT: 5432
         DB_INITIAL_PATH: ws/pg/backup.sql
+        
+    - name: Test
+      run: make test
