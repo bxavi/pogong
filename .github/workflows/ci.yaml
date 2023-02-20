@@ -51,7 +51,7 @@ jobs:
     - run: docker exec ${{ env.CONTAINER_DB }} ls pg
 
     - name: Restore DB
-      run: docker exec createdb root && \
+      run: docker exec pogongdb createdb root && \
         make restoredb
         
     - name: Test
