@@ -30,6 +30,8 @@ jobs:
           --name postgres
         volumes:
           - ${{ github.workspace }}:/ws
+        ports:
+          - 5432:5432
 
 
     steps:
