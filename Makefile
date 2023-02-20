@@ -48,7 +48,7 @@ restoredb:
 	@docker exec $(CONTAINER_DB) psql -d root --quiet -f $(DB_INITIAL_PATH)
 
 psql: init
-	docker exec -it $(CONTAINER_DB) psql -U root -d $(PROJECTNAME)
+	docker exec -it $(CONTAINER_DB) psql -U pogong -d $(PROJECTNAME)
 
 generate: schemadb schemapy sqlc tygo
 
