@@ -14,7 +14,7 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     env:
-      DB_INITIAL_PATH: /pg
+      DB_INITIAL_PATH: /pg/backup.sql
     services:
       pogongdb:
         image: postgres:15.2-alpine
