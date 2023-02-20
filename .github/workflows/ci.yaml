@@ -50,7 +50,7 @@ jobs:
     - run: ls ${{github.workspace}}
     - run: ls
     - run: ls pg
-    - run: docker exec pogongdb ls
+    - run: docker exec ${{CONTAINER_DB}} ls
 
     - name: Restore DB
       run: make restoredb
