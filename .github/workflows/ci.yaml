@@ -29,7 +29,7 @@ jobs:
           --health-retries 5
           --name pogongdb
         volumes:
-          - /github/workspace/pg:/pg
+          - /github/workspace:/pg
         ports:
           - 5432:5432
 
