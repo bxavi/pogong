@@ -30,7 +30,7 @@ jobs:
           --health-retries 5
           --name pogongdb
         volumes:
-          - ${{ github.workspace }}:/gw
+          - ${{ github.workspace }}:/w
         ports:
           - 5432:5432
 
@@ -50,7 +50,7 @@ jobs:
       
     - run: echo ${{ env.SQL_PATH }}
     - run: ls ${{ env.SQL_PATH }}
-    - run: docker exec ${{ env.CONTAINER_DB }} ls gw/pg
+    - run: docker exec ${{ env.CONTAINER_DB }} ls w/pg
 
     - run: docker exec pogongdb createdb -U root root
     - name: Restore DB
