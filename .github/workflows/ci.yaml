@@ -43,7 +43,7 @@ jobs:
       env:
           SKIP_LOGIN: true
       
-    - run: docker exec pogongdb ls ./pg
+    - run: docker exec pogongdb ls /pg
       working-directory: ${{github.workspace}}
 
     - name: Restore DB
@@ -51,4 +51,5 @@ jobs:
       env:
         POSTGRES_HOST: pogongdb
         POSTGRES_PORT: 5432
+        DB_INITIAL_PATH: /pg/backup.sql
 
