@@ -1,6 +1,8 @@
 #TODO DEPENDENCIES make, angular cli, npm, docker, go > 1.17
 PROJECTNAME = "pogong"
 
+DB_INITIAL_PATH = "./pg/backup.sql"
+
 .DEFAULT_GOAL := all
 IMAGES = "postgres:15.2-alpine" "kjconroy/sqlc" 
 GOMODS = "github.com/gzuidhof/tygo@latest" "github.com/gobuffalo/nulls" "github.com/stretchr/testify/require" "github.com/lib/pq"
@@ -43,7 +45,7 @@ backupdb:
 	docker exec $(CONTAINER_DB) pg_dump -F p --if-exists --clean --create --no-owner --username=root --host=localhost -p $(DB_INT_PORT) pogong > ./pg/backup.sql
 
 restoredb:
-	@docker exec $(CONTAINER_DB) psql --quiet -f "./pg/backup.sql"
+	@docker exec $(CONTAINER_DB) psql --quiet -f $(DB_INITIAL_PATH)
 
 psql: init
 	docker exec -it $(CONTAINER_DB) psql -U root -d pogong
