@@ -45,7 +45,7 @@ backupdb:
 	docker exec $(CONTAINER_DB) pg_dump -F p --if-exists --clean --create --no-owner --username=root --host=localhost -p $(DB_INT_PORT) $(PROJECTNAME) > ./pg/backup.sql
 
 restoredb:
-	@docker exec $(CONTAINER_DB) psql -u root --quiet -f $(DB_INITIAL_PATH)
+	@docker exec $(CONTAINER_DB) psql -d root --quiet -f $(DB_INITIAL_PATH)
 
 psql: init
 	docker exec -it $(CONTAINER_DB) psql -U root -d $(PROJECTNAME)
