@@ -18,7 +18,7 @@ go:
 	for gomod in $(GOMODS); do \
 		go get $$gomod; \
 	done
-
+#replac with go mod download
 pull:
 	for images in $(IMAGES); do \
 		docker pull $$images; \
@@ -27,10 +27,17 @@ pull:
 npm: 
 	cd ui && npm ci && cd ..
 
+createdb:
+	docker exec -it pogongdb createdb --username=root --owner=root pogong
+
+dropdb:
+	docker exec -it pogongdb dropdb pogong
+
 init: $(if $(RUNNING_DB),startdb, initdb)
 
 initdb:
-	docker run -v "$(CURDIR)":/w/ --name=$(CONTAINER_DB) -p 5432:$(DB_INT_PORT) -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -e PGDATA="./pg/data" -d postgres:15.2-alpine
+	docker run --name=$(CONTAINER_DB) -p 5432:$(DB_INT_PORT) -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -d postgres:15.2-alpine
+#	this version mounts data into local file system docker run -v "$(CURDIR)":/w/ --name=$(CONTAINER_DB) -p 5432:$(DB_INT_PORT) -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -e PGDATA="./w/pg/data" -d postgres:15.2-alpine
  
 startdb:
 	@if [ -z $$(docker ps -q -f name=$(CONTAINER_DB) -f status=running) ]; then \
@@ -40,13 +47,19 @@ startdb:
 killdb:
 	docker kill $(CONTAINER_DB) && docker rm $(CONTAINER_DB)
 
+migrateup:
+	migrate -path migrations -database "postgresql://root:password@localhost:5432/pogong?sslmode=disable" -verbose up
+
+migratedown:
+	migrate -path migrations -database "postgresql://root:password@localhost:5432/pogong?sslmode=disable" -verbose down
+
 backupdb:
 	docker exec $(CONTAINER_DB) pg_dump -F p --if-exists --clean --create --no-owner --username=root --host=localhost -p $(DB_INT_PORT) $(PROJECTNAME) > ./pg/backup.sql
 
 restoredb:
 	@docker exec $(CONTAINER_DB) psql -d root --quiet -f w/$(DB_INITIAL_PATH)
 
-psql: init
+psql:
 	docker exec -it $(CONTAINER_DB) psql -U root -d $(PROJECTNAME)
 
 generate: schemadb schemapy sqlc tygo
@@ -66,4 +79,4 @@ tygo:
 test:
 	go test -v -cover ./...
 
-.PHONY: sqlc tygo npm pull initdb install go init generate backupdb killdb restoredb schemapy psql test
+.PHONY: sqlc tygo npm pull initdb install go init generate backupdb killdb restoredb schemapy psql test createdb dropdb migrateup migratedown
