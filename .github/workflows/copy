@@ -14,6 +14,7 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     env:
+      CONTAINER_DB: pogongdb
       SQL_PATH: ${{ join(github.workspace, '/pg')}}
     services:
       pogongdb:
@@ -28,6 +29,8 @@ jobs:
           --health-timeout 5s
           --health-retries 5
           --name pogongdb
+        volumes:
+          - ${{ github.workspace }}:/w
         ports:
           - 5432:5432
 
@@ -39,7 +42,19 @@ jobs:
       uses: actions/setup-go@v3
       with:
         go-version: 1.19
-  
+      
+    - name: Install Docker CLI
+      uses: actions-hub/docker/cli@master
+      env:
+          SKIP_LOGIN: true
+      
+    - run: echo ${{ env.SQL_PATH }}
+    - run: ls ${{ env.SQL_PATH }}
+    - run: docker exec ${{ env.CONTAINER_DB }} ls w/pg
+
+    - run: docker exec pogongdb createdb -U root root
+    - name: Restore DB
+      run: make restoredb
         
     - name: Test
       run: make test
