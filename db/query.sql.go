@@ -7,58 +7,76 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
-const createAccounts = `-- name: CreateAccounts :one
-INSERT INTO accounts (
+const createAccount = `-- name: CreateAccount :one
+INSERT INTO account (
 	email, password
 ) VALUES (
 	$1, $2
 )
-RETURNING id, email, password
+RETURNING id, email, password, created_at
 `
 
-type CreateAccountsParams struct {
+type CreateAccountParams struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-func (q *Queries) CreateAccounts(ctx context.Context, arg CreateAccountsParams) (*Account, error) {
-	row := q.db.QueryRowContext(ctx, createAccounts, arg.Email, arg.Password)
+func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (*Account, error) {
+	row := q.db.QueryRowContext(ctx, createAccount, arg.Email, arg.Password)
 	var i Account
-	err := row.Scan(&i.ID, &i.Email, &i.Password)
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.CreatedAt,
+	)
 	return &i, err
 }
 
-const deleteAccounts = `-- name: DeleteAccounts :exec
-DELETE FROM accounts
+const deleteAccount = `-- name: DeleteAccount :exec
+DELETE FROM account
 WHERE id = $1
 `
 
-func (q *Queries) DeleteAccounts(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteAccounts, id)
+func (q *Queries) DeleteAccount(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteAccount, id)
 	return err
 }
 
-const getAccounts = `-- name: GetAccounts :one
-SELECT id, email, password FROM accounts
+const getAccount = `-- name: GetAccount :one
+SELECT id, email, password, created_at FROM account
 WHERE id = $1  LIMIT 1
 `
 
-func (q *Queries) GetAccounts(ctx context.Context, id int64) (*Account, error) {
-	row := q.db.QueryRowContext(ctx, getAccounts, id)
+func (q *Queries) GetAccount(ctx context.Context, id int64) (*Account, error) {
+	row := q.db.QueryRowContext(ctx, getAccount, id)
 	var i Account
-	err := row.Scan(&i.ID, &i.Email, &i.Password)
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.CreatedAt,
+	)
 	return &i, err
 }
 
-const listAccounts = `-- name: ListAccounts :many
-SELECT id, email, password FROM accounts
-ORDER BY email
+const listAccount = `-- name: ListAccount :many
+SELECT id, email, password, created_at FROM account
+ORDER BY id
+LIMIT $2
+OFFSET $1
 `
 
-func (q *Queries) ListAccounts(ctx context.Context) ([]*Account, error) {
-	rows, err := q.db.QueryContext(ctx, listAccounts)
+type ListAccountParams struct {
+	Offset sql.NullInt32 `json:"offset"`
+	Limit  sql.NullInt32 `json:"limit"`
+}
+
+func (q *Queries) ListAccount(ctx context.Context, arg ListAccountParams) ([]*Account, error) {
+	rows, err := q.db.QueryContext(ctx, listAccount, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +84,12 @@ func (q *Queries) ListAccounts(ctx context.Context) ([]*Account, error) {
 	items := []*Account{}
 	for rows.Next() {
 		var i Account
-		if err := rows.Scan(&i.ID, &i.Email, &i.Password); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.Password,
+			&i.CreatedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, &i)
@@ -80,23 +103,28 @@ func (q *Queries) ListAccounts(ctx context.Context) ([]*Account, error) {
 	return items, nil
 }
 
-const updateAccounts = `-- name: UpdateAccounts :one
-UPDATE accounts
+const updateAccount = `-- name: UpdateAccount :one
+UPDATE account
 set email = $2,
 password = $3
 WHERE id = $1
-RETURNING id, email, password
+RETURNING id, email, password, created_at
 `
 
-type UpdateAccountsParams struct {
+type UpdateAccountParams struct {
 	ID       int64  `json:"id"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-func (q *Queries) UpdateAccounts(ctx context.Context, arg UpdateAccountsParams) (*Account, error) {
-	row := q.db.QueryRowContext(ctx, updateAccounts, arg.ID, arg.Email, arg.Password)
+func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (*Account, error) {
+	row := q.db.QueryRowContext(ctx, updateAccount, arg.ID, arg.Email, arg.Password)
 	var i Account
-	err := row.Scan(&i.ID, &i.Email, &i.Password)
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.CreatedAt,
+	)
 	return &i, err
 }

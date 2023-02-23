@@ -1,8 +1,11 @@
-CREATE TABLE "accounts" (
+CREATE TABLE "account" (
   "id" bigserial PRIMARY KEY,
-  "email" varchar NOT NULL,
+  "email" varchar UNIQUE NOT NULL,
   "password" varchar NOT NULL,
-  "created_at" timestamptz DEFAULT 'now()'
+  "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-INSERT INTO accounts (email, password) VALUES ('admin@email.com', 'password');
+CREATE INDEX ON "account" ("email");
+
+
+INSERT INTO account (email, password) VALUES ('admin', 'password');

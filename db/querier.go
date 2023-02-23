@@ -9,11 +9,11 @@ import (
 )
 
 type Querier interface {
-	CreateAccounts(ctx context.Context, arg CreateAccountsParams) (*Account, error)
-	DeleteAccounts(ctx context.Context, id int64) error
-	GetAccounts(ctx context.Context, id int64) (*Account, error)
-	ListAccounts(ctx context.Context) ([]*Account, error)
-	UpdateAccounts(ctx context.Context, arg UpdateAccountsParams) (*Account, error)
+	CreateAccount(ctx context.Context, arg CreateAccountParams) (*Account, error)
+	DeleteAccount(ctx context.Context, id int64) error
+	GetAccount(ctx context.Context, id int64) (*Account, error)
+	ListAccount(ctx context.Context, arg ListAccountParams) ([]*Account, error)
+	UpdateAccount(ctx context.Context, arg UpdateAccountParams) (*Account, error)
 }
 
 var _ Querier = (*Queries)(nil)

@@ -24,15 +24,6 @@ sql:
           - column: "*.*ID"
             go_struct_tag: "json:\"-\""
             nullable: true
-          - column: "player.password"
-            go_struct_tag: "json:\"-\""
-            nullable: true
-          - column: "player.token"
-            go_struct_tag: "json:\"-\""
-            nullable: true
-          - column: "player.token_datetime"
-            go_struct_tag: "json:\"-\""
-            nullable: true
           - db_type: "pg_catalog.int4"
             go_type: "github.com/gobuffalo/nulls.Int"
             nullable: true
@@ -65,7 +56,7 @@ sql:
             nullable: true
           - db_type: "uuid"
             go_type: "github.com/gobuffalo/nulls.uuid"
-            nullable: trueXs
+            nullable: true
           - db_type: "pgtype.UUID"
             go_type: "github.com/gobuffalo/nulls.uuid"
             nullable: true

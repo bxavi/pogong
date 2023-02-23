@@ -79,4 +79,7 @@ tygo:
 test:
 	go test -v -cover ./...
 
-.PHONY: sqlc tygo npm pull initdb install go init generate backupdb killdb restoredb schemapy psql test createdb dropdb migrateup migratedown
+server:
+	go run main.go
+ 
+.PHONY: sqlc tygo npm pull initdb install go init generate backupdb killdb restoredb schemapy psql test createdb dropdb migrateup migratedown server

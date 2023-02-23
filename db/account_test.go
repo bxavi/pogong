@@ -3,66 +3,14 @@ package db
 import (
 	"context"
 	"database/sql"
-	"fmt"
-	"log"
-	"math/rand"
-	"os"
-	"strings"
 	"testing"
-	"time"
 
 	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/require"
 )
 
-var testDb *sql.DB
-var testQueries *Queries = New(testDb)
-
-const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:password@localhost:5432/pogong?sslmode=disable"
-)
-
-func TestMain(m *testing.M) {
-	con, err := sql.Open(dbDriver, dbSource)
-	if err != nil || con == nil {
-		log.Fatal("TestMain no access to be db")
-	}
-	testQueries = New(con)
-	os.Exit(m.Run())
-}
-
-var alphabet = "abcdefghijklmnopqrstuvwxyz"
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
-func RandomString(n int) string {
-	var sb strings.Builder
-	k := len(alphabet)
-	for i := 0; i < n; i++ {
-		c := alphabet[rand.Intn(k)]
-		sb.WriteByte(c)
-	}
-	return sb.String()
-}
-
-func RandomInt(min, max int) int {
-	return min + rand.Intn(max-min+1)
-}
-func RandomBigInt(min, max int64) int64 {
-	return min + rand.Int63n(max-min+1)
-}
-func RandomMoney() int64 {
-	return rand.Int63n(RandomBigInt(1, 1000))
-}
-func RandomEmail() string {
-	return fmt.Sprintf("%s@email.com", RandomString(10))
-}
-
-func createRandomAccountParams() CreateAccountsParams {
-	return CreateAccountsParams{
+func createRandomAccountParams() CreateAccountParams {
+	return CreateAccountParams{
 		Email:    RandomEmail(),
 		Password: RandomString(10),
 	}
@@ -70,13 +18,13 @@ func createRandomAccountParams() CreateAccountsParams {
 
 func createRandomAccount() Account {
 	p := createRandomAccountParams()
-	a, _ := testQueries.CreateAccounts(context.Background(), p)
+	a, _ := testQueries.CreateAccount(context.Background(), p)
 	return *a
 }
 
 func TestCreateAccount(t *testing.T) {
 	p := createRandomAccountParams()
-	a, err := testQueries.CreateAccounts(context.Background(), p)
+	a, err := testQueries.CreateAccount(context.Background(), p)
 	require.NoError(t, err)
 	require.NotEmpty(t, a)
 	require.Equal(t, p.Email, a.Email)
@@ -84,9 +32,9 @@ func TestCreateAccount(t *testing.T) {
 }
 func TestDeleteAccount(t *testing.T) {
 	p := createRandomAccount()
-	err := testQueries.DeleteAccounts(context.Background(), p.ID)
+	err := testQueries.DeleteAccount(context.Background(), p.ID)
 	require.NoError(t, err)
-	d, err := testQueries.GetAccounts(context.Background(), p.ID)
+	d, err := testQueries.GetAccount(context.Background(), p.ID)
 	require.Error(t, err)
 	require.Empty(t, d)
 }
@@ -96,7 +44,10 @@ func TestListAccounts(t *testing.T) {
 		createRandomAccount()
 	}
 
-	l, err := testQueries.ListAccounts(context.Background())
+	l, err := testQueries.ListAccount(context.Background(), ListAccountParams{
+		Limit:  sql.NullInt32{Valid: false},
+		Offset: sql.NullInt32{Valid: false},
+	})
 	require.NoError(t, err)
 	require.NotEmpty(t, l)
 
@@ -108,13 +59,13 @@ func TestListAccounts(t *testing.T) {
 func TestUpdateAccount(t *testing.T) {
 	a := createRandomAccount()
 
-	args := UpdateAccountsParams{
+	args := UpdateAccountParams{
 		ID:       a.ID,
 		Email:    RandomEmail(),
 		Password: RandomString(30),
 	}
 
-	b, err := testQueries.UpdateAccounts(context.Background(), args)
+	b, err := testQueries.UpdateAccount(context.Background(), args)
 	require.NoError(t, err)
 	require.NotEmpty(t, b)
 

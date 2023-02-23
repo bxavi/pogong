@@ -19,21 +19,22 @@ SET row_security = off;
 SET default_table_access_method = heap;
 
 --
--- Name: accounts; Type: TABLE; Schema: public; Owner: -
+-- Name: account; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.accounts (
+CREATE TABLE public.account (
     id bigint NOT NULL,
-    email character varying(100) NOT NULL,
-    password character varying(200) NOT NULL
+    email character varying NOT NULL,
+    password character varying NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
 --
--- Name: accounts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: account_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.accounts_id_seq
+CREATE SEQUENCE public.account_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -42,25 +43,58 @@ CREATE SEQUENCE public.accounts_id_seq
 
 
 --
--- Name: accounts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: account_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.accounts_id_seq OWNED BY public.accounts.id;
-
-
---
--- Name: accounts id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.accounts ALTER COLUMN id SET DEFAULT nextval('public.accounts_id_seq'::regclass);
+ALTER SEQUENCE public.account_id_seq OWNED BY public.account.id;
 
 
 --
--- Name: accounts accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.accounts
-    ADD CONSTRAINT accounts_pkey PRIMARY KEY (id);
+CREATE TABLE public.schema_migrations (
+    version bigint NOT NULL,
+    dirty boolean NOT NULL
+);
+
+
+--
+-- Name: account id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account ALTER COLUMN id SET DEFAULT nextval('public.account_id_seq'::regclass);
+
+
+--
+-- Name: account account_email_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account
+    ADD CONSTRAINT account_email_key UNIQUE (email);
+
+
+--
+-- Name: account account_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account
+    ADD CONSTRAINT account_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: account_email_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX account_email_idx ON public.account USING btree (email);
 
 
 --

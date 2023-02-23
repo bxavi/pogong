@@ -1,6 +1,6 @@
 import re
 path = r"./sqlc";
-inputfile = r"./sql/schema.sql"
+inputfile = r"./migrations/000001_init_schema.up.sql"
 
 outputfile = r"/query.sql"
 
@@ -37,7 +37,9 @@ def makequeries(tablename, cols, path):
         #SELECT ALL STATEMENT
         out += "-- name: List" + tablename.title() + " :many\n"
         out += "SELECT * FROM " +  tablename + "\n"
-        out += "ORDER BY " + cols[1] + ";\n\n"
+        out += "ORDER BY id\n"
+        out += "LIMIT sqlc.narg('limit')\n"
+        out += "OFFSET sqlc.narg('offset');\n\n\n"
 
         #INSERT STATEMENT
         out += "-- name: Create" + tablename.title() + " :one\n"
@@ -45,7 +47,7 @@ def makequeries(tablename, cols, path):
         out += "\t"
         colscount = 0
         for x in range(0, len(cols)):
-            if cols[x] not in sequences[tablename]: #if column is not a sequenced primary key
+            if cols[x] not in sequences[tablename] and cols[x] not in keys[tablename]: #if column is not a sequenced primary key
                 #print(cols[x], "not in" + tablename + "  sequences ")
                 out += cols[x]
                 colscount += 1
@@ -199,10 +201,7 @@ for x in range(len(lines)):
             sequences[table] = []
         sequences[table].append(keyseq)
             
-#print("Primary Keys")
-#print(keys)
-#print("\nSequences")
-#print(sequences)
+
 
 
 s = ""
@@ -242,6 +241,18 @@ for x in range(len(lines)):
         #if cls len == append primary key to line
         schemaLine = lines[x]
 
+        if lines[x].__contains__("PRIMARY KEY"):
+            if tablename not in keys:
+                keys[tablename] = []
+            print(lines[x].split()[0])
+            keys[tablename].append(lines[x].split()[0])
+
+        if lines[x].__contains__("DEFAULT"):
+            if tablename not in sequences:
+                sequences[tablename] = []
+            print(lines[x].split()[0])
+            sequences[tablename].append(lines[x].split()[0])
+
         # else:
         #     schemaLine += ","
         schema += schemaLine + "\n"
@@ -256,5 +267,10 @@ schema = schema.replace("public.", '')
 file = open(path + r"\schema.sql", 'w')
 file.write(schema)
 file.close()
+
+print("Primary Keys")
+print(keys)
+print("\nSequences")
+print(sequences)
 
 additionalQueries(path + outputfile)

@@ -9,40 +9,42 @@ import sqlalchemy
 from pyDAL import models
 
 
-CREATE_ACCOUNTS = """-- name: create_accounts \\:one
-INSERT INTO accounts (
+CREATE_ACCOUNT = """-- name: create_account \\:one
+INSERT INTO account (
 	email, password
 ) VALUES (
 	:p1, :p2
 )
-RETURNING id, email, password
+RETURNING id, email, password, created_at
 """
 
 
-DELETE_ACCOUNTS = """-- name: delete_accounts \\:exec
-DELETE FROM accounts
+DELETE_ACCOUNT = """-- name: delete_account \\:exec
+DELETE FROM account
 WHERE id = :p1
 """
 
 
-GET_ACCOUNTS = """-- name: get_accounts \\:one
-SELECT id, email, password FROM accounts
+GET_ACCOUNT = """-- name: get_account \\:one
+SELECT id, email, password, created_at FROM account
 WHERE id = :p1  LIMIT 1
 """
 
 
-LIST_ACCOUNTS = """-- name: list_accounts \\:many
-SELECT id, email, password FROM accounts
-ORDER BY email
+LIST_ACCOUNT = """-- name: list_account \\:many
+SELECT id, email, password, created_at FROM account
+ORDER BY id
+LIMIT :p2
+OFFSET :p1
 """
 
 
-UPDATE_ACCOUNTS = """-- name: update_accounts \\:one
-UPDATE accounts
+UPDATE_ACCOUNT = """-- name: update_account \\:one
+UPDATE account
 set email = :p2,
 password = :p3
 WHERE id = :p1
-RETURNING id, email, password
+RETURNING id, email, password, created_at
 """
 
 
@@ -50,44 +52,48 @@ class Querier:
     def __init__(self, conn: sqlalchemy.engine.Connection):
         self._conn = conn
 
-    def create_accounts(self, *, email: str, password: str) -> Optional[models.Accounts]:
-        row = self._conn.execute(sqlalchemy.text(CREATE_ACCOUNTS), {"p1": email, "p2": password}).first()
+    def create_account(self, *, email: str, password: str) -> Optional[models.Account]:
+        row = self._conn.execute(sqlalchemy.text(CREATE_ACCOUNT), {"p1": email, "p2": password}).first()
         if row is None:
             return None
-        return models.Accounts(
+        return models.Account(
             id=row[0],
             email=row[1],
             password=row[2],
+            created_at=row[3],
         )
 
-    def delete_accounts(self, *, id: int) -> None:
-        self._conn.execute(sqlalchemy.text(DELETE_ACCOUNTS), {"p1": id})
+    def delete_account(self, *, id: int) -> None:
+        self._conn.execute(sqlalchemy.text(DELETE_ACCOUNT), {"p1": id})
 
-    def get_accounts(self, *, id: int) -> Optional[models.Accounts]:
-        row = self._conn.execute(sqlalchemy.text(GET_ACCOUNTS), {"p1": id}).first()
+    def get_account(self, *, id: int) -> Optional[models.Account]:
+        row = self._conn.execute(sqlalchemy.text(GET_ACCOUNT), {"p1": id}).first()
         if row is None:
             return None
-        return models.Accounts(
+        return models.Account(
             id=row[0],
             email=row[1],
             password=row[2],
+            created_at=row[3],
         )
 
-    def list_accounts(self) -> Iterator[models.Accounts]:
-        result = self._conn.execute(sqlalchemy.text(LIST_ACCOUNTS))
+    def list_account(self, *, offset: Optional[int], limit: Optional[int]) -> Iterator[models.Account]:
+        result = self._conn.execute(sqlalchemy.text(LIST_ACCOUNT), {"p1": offset, "p2": limit})
         for row in result:
-            yield models.Accounts(
+            yield models.Account(
                 id=row[0],
                 email=row[1],
                 password=row[2],
+                created_at=row[3],
             )
 
-    def update_accounts(self, *, id: int, email: str, password: str) -> Optional[models.Accounts]:
-        row = self._conn.execute(sqlalchemy.text(UPDATE_ACCOUNTS), {"p1": id, "p2": email, "p3": password}).first()
+    def update_account(self, *, id: int, email: str, password: str) -> Optional[models.Account]:
+        row = self._conn.execute(sqlalchemy.text(UPDATE_ACCOUNT), {"p1": id, "p2": email, "p3": password}).first()
         if row is None:
             return None
-        return models.Accounts(
+        return models.Account(
             id=row[0],
             email=row[1],
             password=row[2],
+            created_at=row[3],
         )

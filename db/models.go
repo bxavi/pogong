@@ -4,10 +4,13 @@
 
 package db
 
-import ()
+import (
+	"time"
+)
 
 type Account struct {
-	ID       int64  `json:"-"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	ID        int64     `json:"-"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	CreatedAt time.Time `json:"created_at"`
 }
