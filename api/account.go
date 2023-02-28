@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-playground/validator/v10"
 	"github.com/lib/pq"
-	_ "github.com/lib/pq"
 )
 
 //authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload) use to access token payload
