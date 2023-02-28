@@ -5,27 +5,30 @@ import (
 
 	"github.com/bxavi/pogong/api"
 	"github.com/bxavi/pogong/db"
+	"github.com/bxavi/pogong/util"
 	_ "github.com/lib/pq"
 
 	"log"
 )
 
-const (
-	dbDriver      = "postgres"
-	dbSource      = "postgresql://root:password@localhost:5432/pogong?sslmode=disable"
-	serverAddress = "0.0.0.0:8080"
-)
-
 func main() {
-	con, err := sql.Open(dbDriver, dbSource)
+	config, err := util.LoadConfig(".")
+	if err != nil {
+		log.Fatal("cannot load config file:", err)
+	}
+
+	con, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil || con == nil {
-		log.Fatal("TestMain no access to be db")
+		log.Fatal("no access to be db:", err)
 	}
 
 	store := db.NewStore(con)
-	server := api.NewServer(store)
+	server, err := api.NewServer(config, store)
+	if err != nil {
+		log.Fatal("cannot create new server:", err)
+	}
 
-	err = server.Start(serverAddress)
+	err = server.Start(config.ServerAddress)
 	if err != nil {
 		log.Fatal("cannot start server:", err)
 	}

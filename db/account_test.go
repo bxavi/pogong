@@ -5,33 +5,36 @@ import (
 	"database/sql"
 	"testing"
 
+	"github.com/bxavi/pogong/util"
 	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomAccountParams() CreateAccountParams {
-	return CreateAccountParams{
-		Email:    RandomEmail(),
-		Password: RandomString(10),
-	}
-}
+func createRandomAccount(t *testing.T) *Account {
+	password, err := util.HashPassword(util.RandomString(10))
+	require.NoError(t, err)
+	require.NotEmpty(t, password)
 
-func createRandomAccount() Account {
-	p := createRandomAccountParams()
-	a, _ := testQueries.CreateAccount(context.Background(), p)
-	return *a
+	args := CreateAccountParams{
+		Email:    util.RandomEmail(),
+		Password: password,
+	}
+
+	account, err := testQueries.CreateAccount(context.Background(), args)
+	require.NotEmpty(t, account)
+	require.NoError(t, err)
+	require.Equal(t, account.Email, args.Email)
+	require.Equal(t, account.Password, args.Password)
+	require.NotZero(t, account.CreatedAt)
+
+	return account
 }
 
 func TestCreateAccount(t *testing.T) {
-	p := createRandomAccountParams()
-	a, err := testQueries.CreateAccount(context.Background(), p)
-	require.NoError(t, err)
-	require.NotEmpty(t, a)
-	require.Equal(t, p.Email, a.Email)
-	require.Equal(t, p.Password, a.Password)
+	createRandomAccount(t)
 }
 func TestDeleteAccount(t *testing.T) {
-	p := createRandomAccount()
+	p := createRandomAccount(t)
 	err := testQueries.DeleteAccount(context.Background(), p.ID)
 	require.NoError(t, err)
 	d, err := testQueries.GetAccount(context.Background(), p.ID)
@@ -41,7 +44,7 @@ func TestDeleteAccount(t *testing.T) {
 
 func TestListAccounts(t *testing.T) {
 	for i := 0; i < 10; i++ {
-		createRandomAccount()
+		createRandomAccount(t)
 	}
 
 	l, err := testQueries.ListAccount(context.Background(), ListAccountParams{
@@ -57,12 +60,12 @@ func TestListAccounts(t *testing.T) {
 }
 
 func TestUpdateAccount(t *testing.T) {
-	a := createRandomAccount()
+	a := createRandomAccount(t)
 
 	args := UpdateAccountParams{
 		ID:       a.ID,
-		Email:    RandomEmail(),
-		Password: RandomString(30),
+		Email:    util.RandomEmail(),
+		Password: util.RandomString(30),
 	}
 
 	b, err := testQueries.UpdateAccount(context.Background(), args)

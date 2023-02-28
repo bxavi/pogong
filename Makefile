@@ -48,10 +48,16 @@ killdb:
 	docker kill $(CONTAINER_DB) && docker rm $(CONTAINER_DB)
 
 migrateup:
-	migrate -path migrations -database "postgresql://root:password@localhost:5432/pogong?sslmode=disable" -verbose up
+	migrate -path migrations -database "postgresql://root:password@localhost:5432/$(PROJECTNAME)?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path migrations -database "postgresql://root:password@localhost:5432/pogong?sslmode=disable" -verbose down
+	migrate -path migrations -database "postgresql://root:password@localhost:5432/$(PROJECTNAME)?sslmode=disable" -verbose down
+
+migrateup1:
+	migrate -path migrations -database "postgresql://root:password@localhost:5432/$(PROJECTNAME)?sslmode=disable" -verbose up 1
+
+migratedown1:
+	migrate -path migrations -database "postgresql://root:password@localhost:5432/$(PROJECTNAME)?sslmode=disable" -verbose down 1
 
 backupdb:
 	docker exec $(CONTAINER_DB) pg_dump -F p --if-exists --clean --create --no-owner --username=root --host=localhost -p $(DB_INT_PORT) $(PROJECTNAME) > ./pg/backup.sql
@@ -81,5 +87,8 @@ test:
 
 server:
 	go run main.go
+
+mock:
+	mockgen -package mockdb -destination db/mock/store.go  github.com/bxavi/pogong/db Store
  
-.PHONY: sqlc tygo npm pull initdb install go init generate backupdb killdb restoredb schemapy psql test createdb dropdb migrateup migratedown server
+.PHONY: sqlc tygo npm pull initdb install go init generate backupdb killdb restoredb schemapy psql test createdb dropdb migrateup migratedown server mock

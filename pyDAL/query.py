@@ -31,6 +31,13 @@ WHERE id = :p1  LIMIT 1
 """
 
 
+GET_ACCOUNT_WITH_EMAIL = """-- name: get_account_with_email \\:one
+
+SELECT id, email, password, created_at FROM account
+WHERE email = :p1
+"""
+
+
 LIST_ACCOUNT = """-- name: list_account \\:many
 SELECT id, email, password, created_at FROM account
 ORDER BY id
@@ -68,6 +75,17 @@ class Querier:
 
     def get_account(self, *, id: int) -> Optional[models.Account]:
         row = self._conn.execute(sqlalchemy.text(GET_ACCOUNT), {"p1": id}).first()
+        if row is None:
+            return None
+        return models.Account(
+            id=row[0],
+            email=row[1],
+            password=row[2],
+            created_at=row[3],
+        )
+
+    def get_account_with_email(self, *, email: str) -> Optional[models.Account]:
+        row = self._conn.execute(sqlalchemy.text(GET_ACCOUNT_WITH_EMAIL), {"p1": email}).first()
         if row is None:
             return None
         return models.Account(

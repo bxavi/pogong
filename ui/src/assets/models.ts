@@ -6,6 +6,7 @@
 // source: models.go
 
 export interface Account {
+  id: number /* int64 */;
   email: string;
   password: string;
   created_at: string /* RFC3339 */;

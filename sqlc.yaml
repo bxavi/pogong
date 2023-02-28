@@ -18,12 +18,12 @@ sql:
         json_tags_case_style: "none"
         #emit_exact_table_names: true
         overrides:
-          - column: "*.*id"
-            go_struct_tag: "json:\"-\""
-            nullable: true
-          - column: "*.*ID"
-            go_struct_tag: "json:\"-\""
-            nullable: true
+          # - column: "*.*id"
+          #   go_struct_tag: "json:\"-\""
+          #   nullable: true
+          # - column: "*.*ID"
+          #   go_struct_tag: "json:\"-\""
+          #   nullable: true
           - db_type: "pg_catalog.int4"
             go_type: "github.com/gobuffalo/nulls.Int"
             nullable: true

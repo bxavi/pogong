@@ -30,3 +30,9 @@ DELETE FROM account
 WHERE id = $1 ;
 
 -- Add queries here:
+
+-- name: GetAccountWithEmail :one
+SELECT * FROM account
+WHERE email = $1;
+
+

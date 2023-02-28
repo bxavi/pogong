@@ -3,34 +3,63 @@ package api
 import (
 	"database/sql"
 	"net/http"
+	"time"
 
 	"github.com/bxavi/pogong/db"
+	"github.com/bxavi/pogong/util"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-playground/validator/v10"
+	"github.com/lib/pq"
+	_ "github.com/lib/pq"
 )
 
-type createAccountsRequest struct {
+type createAccountRequest struct {
 	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
+	Password string `json:"password" binding:"required,min=8"`
+}
+
+type accountResponse struct {
+	ID        int64     `json:"id"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func (server *Server) createAccount(ctx *gin.Context) {
-	var req createAccountsRequest
+	var req createAccountRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
+	hashedPassword, err := util.HashPassword(req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+	}
+
 	arg := db.CreateAccountParams{
 		Email:    req.Email,
-		Password: req.Password,
+		Password: hashedPassword,
 	}
 
 	account, err := server.store.CreateAccount(ctx, arg)
 	if err != nil {
+		if pqError, ok := err.(*pq.Error); ok {
+			switch pqError.Code.Name() {
+			case "unique_violation":
+				ctx.JSON(http.StatusForbidden, errorResponse(err))
+				return
+			}
+		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
-	ctx.JSON(http.StatusOK, account)
+
+	res := accountResponse{
+		ID:        account.ID,
+		Email:     account.Email,
+		CreatedAt: account.CreatedAt,
+	}
+
+	ctx.JSON(http.StatusOK, res)
 }
 
 type getAccountRequest struct {
@@ -88,4 +117,66 @@ func (server *Server) listAccount(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, account)
+}
+
+type loginAccountRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8"`
+}
+
+type loginAccountResponse struct {
+	AccessToken          string          `json:"access_token"`
+	AccessTokenExpiresAt time.Time       `json:"access_token_expires_at"`
+	Account              accountResponse `json:"user"`
+}
+
+func (server *Server) loginUser(ctx *gin.Context) {
+	var req loginAccountRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+	}
+
+	user, err := server.store.GetAccountWithEmail(ctx, req.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	err = util.CheckPassword(req.Password, user.Password)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+		return
+	}
+
+	accessToken, accessPayload, err := server.tokenMaker.CreateToken(
+		user.Email,
+		server.config.AccessTokenDuration,
+	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+	}
+
+	// refreshToken, refreshPayload, err := server.tokenMaker.CreateToken(
+	// 	user.Email,
+	// 	server.config.AccessTokenDuration,
+	// )
+	// if err != nil {
+	// 	ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+	// }
+
+	// insert session logic here
+
+	res := loginAccountResponse{
+		AccessToken:          accessToken,
+		AccessTokenExpiresAt: accessPayload.ExpiredAt,
+		Account: accountResponse{
+			ID:        user.ID,
+			Email:     user.Email,
+			CreatedAt: user.CreatedAt,
+		},
+	}
+	ctx.JSON(http.StatusOK, res)
 }

@@ -12,6 +12,8 @@ type Querier interface {
 	CreateAccount(ctx context.Context, arg CreateAccountParams) (*Account, error)
 	DeleteAccount(ctx context.Context, id int64) error
 	GetAccount(ctx context.Context, id int64) (*Account, error)
+	// Add queries here:
+	GetAccountWithEmail(ctx context.Context, email string) (*Account, error)
 	ListAccount(ctx context.Context, arg ListAccountParams) ([]*Account, error)
 	UpdateAccount(ctx context.Context, arg UpdateAccountParams) (*Account, error)
 }

@@ -8,6 +8,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	_ "github.com/lib/pq"
 )
 
 const createAccount = `-- name: CreateAccount :one
@@ -53,6 +54,25 @@ WHERE id = $1  LIMIT 1
 
 func (q *Queries) GetAccount(ctx context.Context, id int64) (*Account, error) {
 	row := q.db.QueryRowContext(ctx, getAccount, id)
+	var i Account
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.CreatedAt,
+	)
+	return &i, err
+}
+
+const getAccountWithEmail = `-- name: GetAccountWithEmail :one
+
+SELECT id, email, password, created_at FROM account
+WHERE email = $1
+`
+
+// Add queries here:
+func (q *Queries) GetAccountWithEmail(ctx context.Context, email string) (*Account, error) {
+	row := q.db.QueryRowContext(ctx, getAccountWithEmail, email)
 	var i Account
 	err := row.Scan(
 		&i.ID,

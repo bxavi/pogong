@@ -8,4 +8,4 @@ CREATE TABLE "account" (
 CREATE INDEX ON "account" ("email");
 
 
-INSERT INTO account (email, password) VALUES ('admin', 'password');
+INSERT INTO account (email, password) VALUES ('admin@email.com', '$2a$10$1F9WK1GD8WYUEGLpTk3eE.QmiKEPA/wCJPjkc7RO5Cqf7G4kyJgme');

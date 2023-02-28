@@ -159,9 +159,12 @@ def makequeries(tablename, cols, path):
 def additionalQueries(path):
     with open(path, 'a', encoding='latin-1') as file:
         
-        out = "-- Add queries here:\n"
+        out = "-- Add queries here:\n\n"
 
-        
+        out += "-- name: GetAccountWithEmail :one\n"
+        out += "SELECT * FROM account\n"
+        out += "WHERE email = $1;\n\n\n"
+
         file.write(out)
 
 f = open(inputfile,"r", encoding='latin-1')
@@ -200,9 +203,6 @@ for x in range(len(lines)):
             #print("adding " + table + " to sequences")
             sequences[table] = []
         sequences[table].append(keyseq)
-            
-
-
 
 s = ""
 schema = ""
